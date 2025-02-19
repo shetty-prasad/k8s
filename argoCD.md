@@ -55,3 +55,23 @@ argocd app sync app1 app2 # sync multiple apps
 argocd project get project-name  #get project details
 argocd project get project-name -o yaml
 ```
+
+argocd checks the repo every 3 minutes to make the desired changes, aka reconciliation loop - using timeout
+need to change the config map value and restart the argocd-repo-server deployment
+
+![image](https://github.com/user-attachments/assets/3704b5b8-426e-4fa4-b478-c9b9557a5787)
+
+![image](https://github.com/user-attachments/assets/6a336c40-5778-4bf8-9a9c-bec87b0b59db)
+
+sync strategies
+
+![image](https://github.com/user-attachments/assets/7e8fbf83-f912-4161-abcf-1a8b1a505625)
+
+
+
+
+
+
+
+
+
