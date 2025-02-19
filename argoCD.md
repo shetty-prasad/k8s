@@ -67,7 +67,10 @@ sync strategies
 
 ![image](https://github.com/user-attachments/assets/7e8fbf83-f912-4161-abcf-1a8b1a505625)
 
-
+Enable self heal and auto pruning
+```
+argocd app set health-check-app  --sync-policy=auto --self-heal --auto-prune
+```
 
 
 
