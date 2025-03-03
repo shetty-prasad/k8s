@@ -145,7 +145,7 @@ argocd app sync health-check-app
 ```
 kubectl apply -f https://3000-port-tcybnbdg2jycxf74.labs.kodekloud.com/bob/gitops-argocd/raw/branch/master/declarative/multi-app/app-of-apps.yml -n argocd
 
-kubectl get Application -n argoc
+kubectl get Application -n argocd
 ```
 
 
