@@ -22,6 +22,7 @@ the proxy below is actually the service mesh
 
 ![image](https://github.com/user-attachments/assets/e9980cb8-644c-4370-850d-93c707a1b2a0)
 
+### Istio Architecture
 
-
+![image](https://github.com/user-attachments/assets/94653910-de4e-491e-aba7-04d959e09560)
 
