@@ -12,7 +12,10 @@ It is used to customize the k8s manifest file while keeping the same base file a
 
 ![image](https://github.com/user-attachments/assets/e8acbe9b-57bf-4084-b1d9-d07b0ab0ad1b)
 
-#### Install kustomize
+#### Install kustomize client
+
+Kustomize is already inbuilt in the kubernetes cluster. You can do " kubectl kustomize --help " to check that. 
+
 ```
 curl -s "https://raw.githubusercontent.com/kubernetessigs/kustomize/master/hack/install_kustomize.sh" | bash
 ```
