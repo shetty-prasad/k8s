@@ -145,6 +145,25 @@ Delete a List using strategic merge patch
 
 ![image](https://github.com/user-attachments/assets/c5308e27-7a94-44b9-b691-8c9c0356c58d)
 
+### Overlays
+
+If you want to apply the changes in only one environment
+
+kubectl apply -k /root/code/k8s/overlays/QA
+
+Environment specific config that add or modify base config
+
+![image](https://github.com/user-attachments/assets/4cb849e6-362b-4cc7-abb0-854360b3badc)
+
+You can add a new deployment specific to the environment. As shown below, grafana is installed only on prod
+
+![image](https://github.com/user-attachments/assets/80d4c705-49e7-43ca-bcb6-f6e5ceac911a)
+
+A generalised structure shown below
+
+![image](https://github.com/user-attachments/assets/f979df26-0240-470c-94fc-5524e44d2067)
+
+
 
 
 
