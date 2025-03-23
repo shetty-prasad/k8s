@@ -163,6 +163,55 @@ A generalised structure shown below
 
 ![image](https://github.com/user-attachments/assets/f979df26-0240-470c-94fc-5524e44d2067)
 
+### Components
+
+In short if we want to make similar changes in only a subset i.e QA and Prod but not in dev . We make those changes under components and apply it to only QA & prod .
+
+![image](https://github.com/user-attachments/assets/7274dfae-8a91-474c-bbf6-c63ea754360e)
+
+![image](https://github.com/user-attachments/assets/9393591c-09f2-4f20-af89-8281eb4390dc)
+
+![image](https://github.com/user-attachments/assets/4aab3f65-0ce5-4a18-afbf-3fc19a36d392)
+
+### Generators
+
+In a deployment when secrets are changed it will only change the comfigMap but it will not change the deployment. Hence generators are used which will change the underlying deployment also by adding a suffix to the name automatically.
+
+![image](https://github.com/user-attachments/assets/5dfc4ffc-0534-4164-9879-c0d6c3e0a0d5)
+
+![image](https://github.com/user-attachments/assets/50613b84-862f-41ed-94ef-bfd8a483fb8c)
+
+![image](https://github.com/user-attachments/assets/38d64138-e0da-4706-84da-c998d6355474)
+
+### Imperative commands
+using these command line commands we can make changes directly to the kustomization.yaml file. We can also make the same changes by editing the kustomization.yaml file.
+
+![image](https://github.com/user-attachments/assets/7bcd7f0e-c624-4a59-b487-ec595796cd33)
+
+```
+kustomize edit --help
+
+kustomize edit set namespace production  
+
+kustomize edit set label role:admin org:kodekloud
+
+kustomize edit set image nginx=memcached
+
+kustomize edit set replicas api-deployment=8
+
+kustomize edit add configmap domain-config --from-literal=domain=kodekloud.com --from-literal=subdomain=api
+
+kustomize edit add secret my-secret --from-literal=username=root --from-literal=password=rootpassword123
+
+kustomize edit add resource prometheus-depl.yaml
+```
+
+![image](https://github.com/user-attachments/assets/8768cc23-4890-4f92-b24e-382cf016726c)
+
+![image](https://github.com/user-attachments/assets/6df2de12-5f39-4c3f-a06b-1f6c52e7a69e)
+
+
+
 
 
 
