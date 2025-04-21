@@ -3,6 +3,14 @@
 ## Architecture
 It also has a Cloud Controller manager { CCM }
 
+Depending on the implementation of the cloud controller manager, these are the controllers that are provided by the cloud controller manager:
+
+- Node Controller: This controller is responsible for checking if a particular node is present in the cloud or not and updating the node labels with appropriate labels and annotations.
+- Route Controller: This controller as the name suggests is responsible for configuring routes in the cloud environment so that the nodes remain reachable.
+- Service Controller: Whenever a service of the type load balancer is deployed on the kubernetes cluster then this controller comes into the picture. This controller is responsible for creating a load balancer in the cloud environment.
+
+https://medium.com/@murtazavasi.dev/demystifying-cloud-controller-manager-0ba2d509603c 
+
 ![image](https://github.com/user-attachments/assets/0d1e4d7a-abf1-4d52-bdc5-22962923ab32)
 
 ## There are two modes of operation available
