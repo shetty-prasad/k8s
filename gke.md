@@ -38,5 +38,17 @@ Regional mode has multiple control planes in multiple zones . a node pool by def
 
 ![image](https://github.com/user-attachments/assets/72714d0e-4503-4865-a953-b5c451ef7ca2)
 
+### gcloud command to create cluster
+
+```
+gcloud config set compute/zone us-west1-a
+
+gcloud container clusters create gke-deep-dive --num-nodes=1 --disk-type=pd-standard --disk-size=20
+
+gcloud container clusters create gke-auto --num-nodes=3 --disk-type=pd-standard --disk-size=20 --zone us-west1-a --node-locations us-west1-a,us-west1-b,us-west1-c
+
+
+gcloud beta container --project "clgcporg8-001" clusters create-auto "autopilot-cluster-1" --region "us-west1" --release-channel "regular" --tier "standard" --enable-ip-access --no-enable-google-cloud-access --network "projects/clgcporg8-001/global/networks/default" --subnetwork "projects/clgcporg8-001/regions/us-west1/subnetworks/default" --cluster-ipv4-cidr "/17" --binauthz-evaluation-mode=DISABLED
+```
 
 
