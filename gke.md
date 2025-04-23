@@ -51,4 +51,29 @@ gcloud container clusters create gke-auto --num-nodes=3 --disk-type=pd-standard 
 gcloud beta container --project "clgcporg8-001" clusters create-auto "autopilot-cluster-1" --region "us-west1" --release-channel "regular" --tier "standard" --enable-ip-access --no-enable-google-cloud-access --network "projects/clgcporg8-001/global/networks/default" --subnetwork "projects/clgcporg8-001/regions/us-west1/subnetworks/default" --cluster-ipv4-cidr "/17" --binauthz-evaluation-mode=DISABLED
 ```
 
+create cluster with labels
+```
+gcloud container clusters create gke-deep-dive --zone us-west1-a --num-nodes=1 --disk-type=pd-standard --disk-size=20 –labels=test=gke
+
+gcloud container clusters describe gke-deep-dive --zone us-west1-a
+
+gcloud container clusters update gke-deep-dive --zone us-west1-a –update-labels=newlabel=gkenew
+
+gcloud container clusters update gke-deep-dive --zone us-west1-a --remove-labels=newlabel
+gcloud container clusters describe gke-deep-dive --zone us-west1-a
+```
+
+create cluster with autoscaling
+```
+gcloud container clusters create gke-deep-dive --region=us-west1-a --disk-type=pd-standard --disk-size=20 --num-nodes=1
+```
+
+Adding a node pool with autoscaling
+```
+gcloud container node-pools create gke-node-pool --cluster=gke-deep-dive --enable-autoscaling --max-nodes=2 --region=us-west1-a --disk-type=pd-standard --disk-size=20
+
+gcloud container node-pools describe gke-node-pool –cluster=gke-deep-dive |grep autoscaling -A 1
+
+gcloud container clusters update gke-deep-dive --no-enable-autoscaling --node-pool=gke-node-pool --region=us-west1-a
+```
 
