@@ -91,8 +91,8 @@ Copy and Add are similar, except that Add has some advantages over copy
 
 - Using Add u can extract an image also
 
-RUN  abc.tar.gz  /app
+ADD  abc.tar.gz  /app
 
 - Using Add u can download from a url also
 
-RUN  https://abc.com  /app
+ADD  https://abc.com  /app
