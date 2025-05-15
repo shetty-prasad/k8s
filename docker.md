@@ -90,7 +90,9 @@ docker stats --no-stream ---> get utilization (cpu,memory, etc) of all the conta
 Copy and Add are similar, except that Add has some advantages over copy
 
 - Using Add u can extract an image also
-RUN abc.tar.gz /app
+
+RUN  abc.tar.gz  /app
 
 - Using Add u can download from a url also
-RUN https://abc.com /app
+
+RUN  https://abc.com  /app
