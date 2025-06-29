@@ -96,3 +96,36 @@ ADD  abc.tar.gz  /app
 - Using Add u can download from a url also
 
 ADD  https://abc.com  /app
+
+### RUN
+
+* The RUN instruction is used in Dockerfiles to execute commands that build and configure the Docker image.
+* These commands are executed during the image build process, and each RUN instruction creates a new layer in the Docker image.
+* For example, if you create an image that requires specific software or libraries installed, you would use RUN to execute the necessary installation commands.
+** eg :-- RUN apt update && apt -y install apache2 **
+
+### CMD
+* The CMD instruction specifies the default command to run when a container is started from the Docker image.
+* **CMD can be overridden by supplying command-line arguments to docker run.**
+  eg:-
+  * For example, by default, you might want a web server to start, but users could override this to run a shell instead:
+  * CMD ["apache2ctl", "-DFOREGROUND"]
+ 
+  * Users can start the container with docker run -it <image> /bin/bash to get a Bash shell instead of starting Apache.
+ 
+### ENTRYPOINT
+
+* Any arguments supplied to the docker run command are appended to the ENTRYPOINT command.
+* Use ENTRYPOINT when you need your container to always run the same base command, and you want to allow users to append additional commands at the end.
+* ENTRYPOINT can be overridden on the docker run command line by supplying the --entrypoint flag.
+* For example, suppose you are packaging a custom script that requires arguments (e.g., “my_script extra_args”). In that case, you can use ENTRYPOINT to always run the script process (“my_script”) and then allow the image users to specify the “extra_args” on the docker run command line
+* ENTRYPOINT ["my_script"]
+
+### Combining CMD and ENTRYPOINT
+* The CMD instruction can be used to provide default arguments to an ENTRYPOINT if it is specified in the exec form.
+* This setup allows the entry point to be the main executable and CMD to specify additional arguments that can be overridden by the user.
+
+**ENTRYPOINT ["python", "/app/my_script.py"]***
+**CMD ["--default-arg"]**
+
+Running docker run myimage --user-arg executes **python /app/my_script.py --user-arg**.
