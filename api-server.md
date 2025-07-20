@@ -73,3 +73,6 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --kubelet-client-key=/var/lib/kubernetes/kubernetes-key.pem \\
 ```
 
+<img width="708" height="413" alt="image" src="https://github.com/user-attachments/assets/0a8da78d-923b-4215-be3a-c2f11cb77971" />
+
+
