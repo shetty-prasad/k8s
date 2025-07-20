@@ -13,6 +13,7 @@ kubectl exec etcd-master -n kube-system -- etcdctl get / --prefix --keys-only
 ```
 
 * To access etcd in k8s use the etcdctl, you need to  explicitly set the etcd version to 3 which is the latest.
+* You must also specify the path to certificate files so that ETCDCTL can authenticate to the ETCD API Server. The certificate files are available in the etcd-master at the following path.
 ```
 export ETCDCTL_API=3
 ```
