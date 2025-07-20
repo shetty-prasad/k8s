@@ -1,4 +1,4 @@
-The primary responsibility of the Kubernetes scheduler is to **assign pods to nodes based on a series of criteria. The creation of the pods is handled by kubectl .**
+The primary responsibility of the Kubernetes scheduler is to **assign pods to nodes based on a series of criteria. The creation of the pods is handled by kubelet .**
 
 This ensures that the selected node has sufficient resources and meets any specific requirements. 
 
