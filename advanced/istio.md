@@ -26,3 +26,14 @@ the proxy below is actually the service mesh
 
 ![image](https://github.com/user-attachments/assets/94653910-de4e-491e-aba7-04d959e09560)
 
+#### Install Istio
+
+```
+curl -L https://istio.io/downloadIstio | sh -
+cd istio-<version-number>
+export PATH=$PWD/bin:$PATH
+istioctl install --set profile=demo -y
+```
+
+
+
