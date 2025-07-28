@@ -35,5 +35,12 @@ export PATH=$PWD/bin:$PATH
 istioctl install --set profile=demo -y
 ```
 
+Istio sidecars do not get created as the default namespace is not enabled for Istio injection
 
+<img width="1062" height="255" alt="image" src="https://github.com/user-attachments/assets/9997471b-d0d8-4d70-a3ac-7de102079860" />
 
+**Enable Istio injection**
+
+```
+kubectl label namespace default istio-injection=enabled
+```
