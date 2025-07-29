@@ -117,3 +117,7 @@ spec:
     release: "prometheus"
   type: NodePort
 ```
+
+```
+istioctl dashboard kiali
+``
