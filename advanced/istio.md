@@ -51,7 +51,9 @@ kubectl label namespace default istio-injection=enabled
 kubectl apply -f /root/istio-1.20.8/samples/addons
 
 kubectl rollout status deployment/kiali -n istio-system
+
 ** to access its Kiali UI lets create a service
+
 ```
 kubectl apply -f /root/kiali-svc.yml
 
