@@ -209,7 +209,9 @@ spec:
 ```
 
 **Routing Between Service Versions**
-Using Virtual Services in conjunction with destination rules (which define subsets like v1 and v2), you can precisely control traffic percentages. For example, the following Virtual Service configuration directs 99% of traffic to subset v1 and 1% to subset v2:
+Using Virtual Services in conjunction with destination rules (which define subsets like v1 and v2), you can precisely control traffic percentages. 
+Using this method A/B testing is also performed .
+For example, the following Virtual Service configuration directs 99% of traffic to subset v1 and 1% to subset v2:
 
 ```
 apiVersion: networking.istio.io/v1alpha3
@@ -400,3 +402,26 @@ spec:
       perTryTimeout: 2s**
 ```
 
+#### Circuit Breaking
+
+* In a microservices architecture, when one service fails or becomes slow, the subsequent requests are not allowed to pile up.
+* Instead, the circuit breaker immediately interrupts the request flow, marking them as failed.
+* This approach not only protects the application from being overwhelmed but also serves to limit the number of concurrent requests that can be sent to a particular service endpoint.
+
+In Istio, circuit breaking is configured through Destination Rules. The following example demonstrates the configuration for the Product Page Destination Rule, which restricts the number of concurrent TCP connections to three:
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: productpage
+spec:
+  host: productpage
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+**  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 3**
+```
