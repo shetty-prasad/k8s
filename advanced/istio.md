@@ -168,3 +168,235 @@ spec:
 
 kubectl describe gateway bookinfo-gateway
 
+### Virtual Services
+
+* Virtual Services allow you to configure routing rules, directing incoming traffic through the Ingress Gateway to the appropriate service in your service mesh.
+* Creating a Virtual Service decouples your traffic routing policies from the actual service implementations, enabling granular control over how your application's requests are handled.
+* Virtual Services offer flexibility by allowing you to specify hostnames, manage traffic among different service versions, and use both standard and regex URI paths.
+* Once a Virtual Service is created, the Istio control plane disseminates the configuration to all Envoy sidecars in the mesh.
+
+<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/9cc83d54-4c7a-45eb-b6aa-8ae685b38d3c" />
+
+This configuration instructs Istio to forward any traffic passing through the bookinfo-gateway with the host bookinfo.app and matching the specified URL patterns to the productPage service on port 9080.
+
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+spec:
+  hosts:
+    - "bookinfo.app"
+  gateways:
+    - bookinfo-gateway
+  http:
+    - match:
+        - uri:
+            exact: /productpage
+        - uri:
+            prefix: /static
+        - uri:
+            exact: /login
+        - uri:
+            exact: /logout
+        - uri:
+            prefix: /api/v1/products
+      route:
+        - destination:
+            host: productpage
+            port:
+              number: 9080
+```
+
+**Routing Between Service Versions**
+Using Virtual Services in conjunction with destination rules (which define subsets like v1 and v2), you can precisely control traffic percentages. For example, the following Virtual Service configuration directs 99% of traffic to subset v1 and 1% to subset v2:
+
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: reviews
+spec:
+  hosts:
+    - reviews
+  http:
+    - route:
+        - destination:
+            host: reviews
+            subset: v1
+          weight: 99
+        - destination:
+            host: reviews
+            subset: v2
+          weight: 1
+```
+
+### Destination Rules
+
+Destination Rules enable you to define policies that are applied after traffic is routed to a specific service, ensuring controlled distribution and effective load balancing.
+
+Subsets used in Virtual Services are defined in Destination Rules. These rules allow you to apply specific configurations to traffic after it has been routed to a service.
+Subsets represent groups of service instances identified by labels on the respective pods. The following Destination Rule illustrates how subsets for the reviews service are declared:
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: reviews-destination
+spec:
+  host: reviews    ## this is the service name
+  subsets:
+    - name: v1
+      labels:
+        version: v1  ### This label acts as a selector to the deployment
+    - name: v2
+      labels:
+        version: v2
+```
+
+**Customizing Load Balancing Policies**
+By default, Envoy uses a round-robin load-balancing strategy. However, you can modify this behavior by specifying a traffic policy within a Destination Rule. The following example demonstrates a simple pass-through load-balancing policy:
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: reviews-destination
+spec:
+  host: reviews
+  trafficPolicy:
+    loadBalancer:
+      simple: PASSTHROUGH
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
+```
+
+If you require a different policy for a specific subset (for example, a random algorithm for subset "v2"), the global traffic policy can be overridden at the subset level. This flexibility enables you to apply a default policy across all subsets while tailoring specific configurations as necessary.
+
+**Enabling TLS for Enhanced Security**
+Destination Rules also support various security configurations such as enabling TLS at the client level.
+
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: reviews-destination
+spec:
+  host: reviews
+  trafficPolicy:
+    tls:
+      mode: MUTUAL
+      clientCertificate: /myclientcert.pem
+      privateKey: /client_private_key.pem
+      caCertificates: /rootcacerts.pem
+```
+
+**Remember, the host field plays a crucial role in the Destination Rule. When using a short name (e.g., "reviews"), Istio interprets it relative to the rule’s namespace. To ensure that the rule correctly references the intended service, especially if it resides in a different namespace, always use the fully qualified domain name (FQDN).**
+
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: reviews-destination
+spec:
+  host: **reviews.default.svc.cluster.local**
+  trafficPolicy:
+    tls:
+      mode: MUTUAL
+      clientCertificate: /myclientcert.pem
+      privateKey: /client_private_key.pem
+      caCertificates: /rootcacerts.pem
+```
+
+#### Fault Injection
+Fault injection is a testing strategy designed to simulate errors and validate the resilience of your error handling mechanisms. 
+Fault injection in Istio supports the simulation of two primary error types in Virtual Services:
+* Delays
+* Aborts
+
+**Simulating Delay Faults**
+The following example demonstrates how to inject a delay fault into a Virtual Service. In this configuration, a delay of 5 seconds is applied to 10% of the requests routed to the service.
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-service
+spec:
+  hosts:
+  - my-service
+  http:
+  - fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 5s
+    route:
+    - destination:
+        host: my-service
+        subset: v1
+```
+
+**Simulating Abort Faults**
+In addition to delay faults, you can configure abort faults to simulate scenarios where requests are rejected with specific error codes. Abort faults help test how your service behaves under error conditions, ensuring that fallback mechanisms and error handling policies are effective.
+
+#### Timeouts
+* Timeouts prevent a single slow service from adversely affecting the overall system.
+* When a dependent service exceeds a configured waiting period, it automatically fails and returns an error, keeping the rest of the network responsive.
+
+To prevent the system from waiting indefinitely for a response from the product page service, you can configure a timeout such that if the service takes longer than three seconds to respond, the request is automatically rejected. This is accomplished by adding a timeout option in the service configuration.
+
+Below is the VirtualService configuration that applies a three-second timeout to the product page:
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+spec:
+  hosts:
+    - "bookinfo.app"
+  gateways:
+    - bookinfo-gateway
+  http:
+    - match:
+        - uri:
+            exact: /productpage
+        - uri:
+            prefix: /static
+      route:
+        - destination:
+            host: productpage
+            port:
+              number: 9080
+      timeout: 3s
+```
+
+#### Retries
+Retries enable your service to automatically attempt to reconnect when a connection failure occurs between services. This helps mitigate transient network issues without modifying your application code.
+
+How Retries Work
+When one service fails to connect to another, Virtual Services can be set up to automatically retry the operation. The main parameters for configuration are:
+
+* Attempts: The number of times Istio will try to route the request.
+* Per Try Timeout: The timeout duration for each individual retry.
+
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-service
+spec:
+  hosts:
+  - my-service
+  http:
+  - route:
+    - destination:
+        host: my-service
+        subset: v1
+   ** retries:
+      attempts: 3
+      perTryTimeout: 2s**
+```
+
