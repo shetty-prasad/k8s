@@ -425,3 +425,24 @@ spec:
       tcp:
         maxConnections: 3**
 ```
+
+### Istio Security Architecture
+
+Key Security Components
+
+**Istiod: The Certification Authority**
+Within Istiod, a dedicated certification authority manages keys and certificates across the Istio environment. This component:
+* Validates certificates.
+* Approves certificate signing requests (CSRs).
+
+ **Envoy Proxy and Istio Agent**
+ When a workload starts, the Envoy proxy requests a certificate and key from the Istio agent. This process ensures that all communications between services are securely encrypted and authenticated from the very start.
+
+ **Configuration API Server**
+ The Configuration API Server plays a crucial role by distributing authentication, authorization, and secure naming policies across the service mesh. These policies are pushed to:
+* Sidecars.
+* Ingress and Egress proxies.
+
+### Authentication
+
+Need to study  Authentication, Authorization & Certificate Management 
