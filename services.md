@@ -2,6 +2,9 @@ Kubernetes services allow different sets of Pods to interact with each other. Ei
 
 Different types of services :
 
+<img width="660" height="314" alt="image" src="https://github.com/user-attachments/assets/43b54178-5c78-4b1f-8663-a1bb7390bdba" />
+
+
 * **ClusterIP**: Creates a virtual IP for internal communication between services (e.g., connecting front-end to back-end servers). It is used by pods to connect internally
 * **NodePort**: Maps a port on the node to a port on a Pod. It is used by pods to connect externally
 * **LoadBalancer**: Provisions an external load balancer (supported in cloud environments) to distribute traffic across multiple Pods.
