@@ -13,7 +13,9 @@ Different types of services :
 With a NodePort service, there are three key ports to consider:
 
 **Target Port**: The port on the Pod where the application listens (e.g., 80).
+
 **Port**: The virtual port on the service within the cluster.
+
 **NodePort**: The external port on the Kubernetes node (by default in the range 30000–32767)
 
 **Note that if you omit targetPort, it defaults to the same value as port. Similarly, if nodePort isn’t provided, Kubernetes automatically assigns one.**
