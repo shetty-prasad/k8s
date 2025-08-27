@@ -34,9 +34,9 @@ kubectl -n argocd get secrets argocd-initial-admin-secret -o json | jq .data.pas
 
 # Install argocd cli
 ```
-curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v3.0.13/argocd-linux-amd64
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
 
-chmod +x /usr/local/bin/argocd
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 ```
 create argocd app using cli 
 ```
