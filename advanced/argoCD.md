@@ -21,8 +21,13 @@ helm install my-argo-cd argo/argo-cd --version 4.8.0  ### Install chart
 ```
 
 To login into UI change service type to nodeport and add nodePort port number
+* **Change type: ClusterIP to type: NodePort and under - name: https add nodePort: 32766**
 
+```
+kubectl edit svc argocd-server -n argocd
+```
 Fetch the ArgoCD initial  Admin Password using 
+
 ```
 kubectl -n argocd get secrets argocd-initial-admin-secret -o json | jq .data.password -r | tr -d '\n'  | base64 -d
 ```
