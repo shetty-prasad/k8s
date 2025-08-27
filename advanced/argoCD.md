@@ -38,6 +38,10 @@ curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/lat
 
 sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 ```
+
+<img width="1380" height="143" alt="image" src="https://github.com/user-attachments/assets/34303912-bde8-4e0e-aef9-0af0e0a8da6a" />
+
+
 create argocd app using cli 
 ```
 argocd app create solar-system-app-2 \
