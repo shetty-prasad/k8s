@@ -116,7 +116,7 @@ argocd app set health-check-app  --sync-policy=auto --self-heal --auto-prune
 
 **Write a custom health check app**
 
-vi patch.yml
+vi patch.yaml
 ```
   data:
     resource.customizations.health.ConfigMap: |
