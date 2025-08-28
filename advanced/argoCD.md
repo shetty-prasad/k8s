@@ -66,12 +66,44 @@ argocd project get project-name  #get project details
 argocd project get project-name -o yaml
 ```
 
+#### How often ArgoCD checks repository
+
 argocd checks the repo every 3 minutes to make the desired changes, aka reconciliation loop - using timeout
 need to change the config map value and restart the argocd-repo-server deployment
 
 ![image](https://github.com/user-attachments/assets/3704b5b8-426e-4fa4-b478-c9b9557a5787)
 
 ![image](https://github.com/user-attachments/assets/6a336c40-5778-4bf8-9a9c-bec87b0b59db)
+
+```
+# Check the current reconciliation timeout setting
+kubectl -n argocd describe pod argocd-repo-server | grep -i "ARGOCD_RECONCILIATION_TIMEOUT:" -B1
+
+# Patch the ArgoCD config map with a custom timeout of 300 seconds
+kubectl -n argocd patch configmap argocd-cm --patch='{"data":{"timeout.reconciliation":"300s"}}'
+
+# Restart the ArgoCD repo server deployment to apply the new setting
+kubectl -n argocd rollout restart deploy argocd-repo-server
+
+# Verify that the new timeout is active
+kubectl -n argocd describe pod argocd-repo-server | grep -i "ARGOCD_RECONCILIATION_TIMEOUT:" -B1
+```
+
+##### Webhook events
+
+* Without any modifications, ArgoCD typically checks for manifest changes every 3 to 5 minutes.
+* However, integrating a webhook—such as one from GitHub targeting [ARGOCD_SERVER_URL]/api/webhook—can trigger instant notifications, reducing synchronization delays.
+
+<img width="1480" height="675" alt="image" src="https://github.com/user-attachments/assets/1492f425-900e-40e1-b045-5a34ee05e469" />
+
+**ArgoCD provides several built-in health checks, each indicating a different state of resource health:**
+
+* Healthy: All associated resources are 100% healthy.
+* Progressing: The resource is not fully healthy but may recover over time.
+* Degraded: The resource has encountered a failure or cannot reach a healthy state promptly.
+* Missing: The resource does not exist in the cluster.
+* Suspended: The resource is paused or in a suspended state (for example, a paused deployment).
+* Unknown: The health assessment has failed, resulting in an indeterminate status.
 
 sync strategies
 
