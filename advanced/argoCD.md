@@ -114,6 +114,26 @@ Enable self heal and auto pruning
 argocd app set health-check-app  --sync-policy=auto --self-heal --auto-prune
 ```
 
+**Write a custom health check app**
+
+vi patch.yml
+```
+  data:
+    resource.customizations.health.ConfigMap: |
+      hs = {}
+      hs.status = "Healthy"
+       if obj.data.TRIANGLE_COLOR == "white" then
+          hs.status = "Degraded"
+          hs.message = "Use any color other than White "
+       end
+      return hs
+```
+```
+kubectl patch configmap argocd-cm -n argocd --patch-file patch.yaml
+```
+
+
+
 ### Add another Cluster to the argocd repo
 
 ```
