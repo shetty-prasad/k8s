@@ -209,13 +209,9 @@ argocd app get helm-random-shapes
 <img width="1490" height="734" alt="image" src="https://github.com/user-attachments/assets/6a184667-9991-486b-b1b9-0b4e0f93c338" />
 
 
-#### then add cluster to the argocd
+The details about the cluster list is stored in the secrets
 
-```
-argocd cluster list
-
-argocd cluster add cluster2
-```
+<img width="1473" height="457" alt="image" src="https://github.com/user-attachments/assets/3817af46-614b-4271-b986-6e2da502faba" />
 
 
 
