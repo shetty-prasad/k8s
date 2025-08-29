@@ -134,7 +134,13 @@ kubectl patch configmap argocd-cm -n argocd --patch-file patch.yaml
 
 
 
-### Add another Cluster to the argocd repo
+### Deploy apps using helm 
+
+* Once the app is deployed using helm by argocd, it is completely managed by argocd. Even helm ls command will return nothing.
+* Also the values in the deployment.yml file can be overridden using the "--helm-set" command .
+  
+<img width="1286" height="666" alt="image" src="https://github.com/user-attachments/assets/a35cf330-c71d-412a-8b2d-048dccbdb5eb" />
+
 
 ```
 argocd repo add https://3000-port-tcybnbdg2jycxf74.labs.kodekloud.com/bob/gitops-argocd.git
