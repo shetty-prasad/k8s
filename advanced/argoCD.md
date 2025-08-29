@@ -50,7 +50,9 @@ argocd app create solar-system-app-2 \
 --dest-namespace solar-system \
 --dest-server https://kubernetes.default.svc
 ```
-
+```
+argocd app sync solar-system-app-2
+```
 ![image](https://github.com/user-attachments/assets/a0438bae-22d2-4a04-8508-20f9e8b3ac8f)
 
 When u add an application, the project details are stored in secrets in the base64 decode format.
@@ -132,11 +134,42 @@ vi patch.yaml
 kubectl patch configmap argocd-cm -n argocd --patch-file patch.yaml
 ```
 
+### ArgoCD declarative approach i.e argo manifest file
 
+```
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: geocentric-model-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sidd-harth/test-cd.git
+    targetRevision: HEAD
+    path: ./declarative/manifests/geocentric-model
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: geocentric-model
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      selfHeal: true
+```
+
+* Project Name: The project within ArgoCD.
+* Source Configuration: Includes the Git repository URL, the revision (e.g., HEAD), and the path pointing to the desired Kubernetes manifests (i.e., the "geocentric-model" directory inside "declarative/manifests"). This directory contains two YAML files: one for the Deployment and one for the Service.
+* Destination Configuration: Specifies the target cluster (using the in-cluster URL) and the namespace where resources will be deployed.
+* Sync Policy: An optional policy that can automate the synchronization and self-healing process.
+
+### ArgoCD app of apps i.e one app calling multiple apps 
+
+<img width="1472" height="819" alt="image" src="https://github.com/user-attachments/assets/9c4656b1-d4bf-415a-b7f2-60160873d554" />
 
 ### Deploy apps using helm 
 
-* Once the app is deployed using helm by argocd, it is completely managed by argocd. Even helm ls command will return nothing.
+* Once the app is deployed by argocd using helm, it is completely managed by argocd. Even helm ls command will return nothing.
 * Also the values in the deployment.yml file can be overridden using the "--helm-set" command .
   
 <img width="1286" height="666" alt="image" src="https://github.com/user-attachments/assets/a35cf330-c71d-412a-8b2d-048dccbdb5eb" />
@@ -162,6 +195,9 @@ argocd app sync helm-random-shapes
 ```
 argocd app get helm-random-shapes
 ```
+
+
+
 ### first add cluster to the kubeconfig file
 
 ![image](https://github.com/user-attachments/assets/b7656894-c4ec-44e1-9950-32e717e2d9c5)
