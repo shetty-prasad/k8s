@@ -209,15 +209,83 @@ argocd app get helm-random-shapes
 <img width="1490" height="734" alt="image" src="https://github.com/user-attachments/assets/6a184667-9991-486b-b1b9-0b4e0f93c338" />
 
 
-The details about the cluster list is stored in the secrets
+The details about the new cluster is stored in the secrets
 
 <img width="1473" height="457" alt="image" src="https://github.com/user-attachments/assets/3817af46-614b-4271-b986-6e2da502faba" />
 
 
+When a new cluster is added into ArgoCD a service account called argocd-manager a cluster role called argocd-manager-role and a cluster role binding argocd-manager-role-binding is created.
+
+### How RBAC Works in ArgoCD
+
+At its core, an RBAC policy in ArgoCD consists of four components:
+
+* Role: A set of permissions.
+* Resource: The target resource such as clusters, certificates, applications, repositories, or logs.
+* Action: The operation allowed (e.g., get, create, update, delete, synchronize, or override).
+* Project/Object: For application objects, the resource path is expressed as the project name followed by a slash and the application name.
+
+Example: Creating a Custom "Create Cluster" Role
+In this configuration, the createCluster role is assigned to the user jai, granting them the ability to create clusters. You can verify the permissions using the argocd account can-i command
+```
+kubectl -n argocd patch configmap argocd-rbac-cm \
+--patch='{"data":{"policy.csv":"p, role:create-cluster, clusters, create, *, jai, role:create-cluster"}}'
+configmap/argocd-rbac-cm patched
+```
+
+Example: Assigning a Project-Level Role
+
+Roles can also be assigned at the project level. Consider a custom role named kia-admins, which grants unrestricted modification rights for any application within the kia-project. This role is granted to a user named ali. When ali attempts to synchronize applications within the kia-project, the system confirms the permissions with a "yes" response.
+
+```
+kubectl -n argocd patch configmap argocd-rbac-cm \
+--patch='{"data":{"policy.csv":"p, role:create-cluster, clusters, create, *, jai, role:create-cluster"}}'
+configmap/argocd-rbac-cm patched
 
 
+$ argocd account can-i create clusters '*'
+yes # Logged in as - jai
 
 
+$ kubectl -n argocd patch configmap argocd-rbac-cm \
+--patch='{"data":{"policy.csv":"p, role:kia-admins, applications, *, kia-project/*, allow, ali, role:kia-admins"}}'
+configmap/argocd-rbac-cm patched
+
+
+$ argocd account can-i delete clusters '*'
+no # Logged in as - jai
+
+
+$ argocd account can-i sync applications kia-project/*
+yes # Logged in as - ali
+```
+
+### User management 
+
+ArgoCD supports two types of user accounts:
+
+Local users
+Users authenticated via Single Sign-On (SSO) (for example, through Okta or similar products)
+
+<img width="1477" height="769" alt="image" src="https://github.com/user-attachments/assets/4c229799-9e73-4f93-8a25-1f089ff03619" />
+
+```
+argocd account list
+
+kubectl -n argocd patch configmap argocd-cm --patch='{"data":{"accounts.jai": "apiKey,login"}}'
+configmap/argocd-cm patched
+
+$ kubectl -n argocd patch configmap argocd-cm --patch='{"data":{"accounts.ali": "apiKey,login"}}'
+configmap/argocd-cm patched
+```
+
+ArgoCD comes with two predefined roles:
+
+Read-only: Grants users access solely to view resources.
+Admin: Grants users full, unrestricted access.
+
+ argocd account update-password --account jai ## to change password
+ 
 
 
 
