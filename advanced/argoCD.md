@@ -167,6 +167,12 @@ spec:
 
 <img width="1472" height="819" alt="image" src="https://github.com/user-attachments/assets/9c4656b1-d4bf-415a-b7f2-60160873d554" />
 
+```
+kubectl apply -f https://3000-port-tcybnbdg2jycxf74.labs.kodekloud.com/bob/gitops-argocd/raw/branch/master/declarative/multi-app/app-of-apps.yml -n argocd
+
+kubectl get Application -n argocd
+```
+
 ### Deploy apps using helm 
 
 * Once the app is deployed by argocd using helm, it is completely managed by argocd. Even helm ls command will return nothing.
@@ -198,9 +204,10 @@ argocd app get helm-random-shapes
 
 
 
-### first add cluster to the kubeconfig file
+### multi cluster deployment
 
-![image](https://github.com/user-attachments/assets/b7656894-c4ec-44e1-9950-32e717e2d9c5)
+<img width="1490" height="734" alt="image" src="https://github.com/user-attachments/assets/6a184667-9991-486b-b1b9-0b4e0f93c338" />
+
 
 #### then add cluster to the argocd
 
@@ -210,47 +217,8 @@ argocd cluster list
 argocd cluster add cluster2
 ```
 
-Either create using the declarative approach or use the yaml file to create 
 
-```
-argocd app create health-check-app \
---repo https://3000-port-tcybnbdg2jycxf74.labs.kodekloud.com/bob/gitops-argocd.git \
---path ./health-check \
---helm-set color.circle=pink \
---helm-set color.square=red \
---helm-set service.type=NodePort \
---dest-namespace default \
---dest-server https://kubernetes.default.svc
-```
-```
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: health-check-app
-spec:
-  destination:
-    name: ''
-    namespace: health-check
-    server: 'https://cluster2-controlplane:6443'
-  source:
-    path: ./health-check
-    repoURL: >-
-      https://3000-port-tcybnbdg2jycxf74.labs.kodekloud.com/bob/gitops-argocd.git
-    targetRevision: HEAD
-  project: default
-  syncPolicy:
-    syncOptions:
-      - CreateNamespace=true
-```
 
-```
-argocd app sync health-check-app
-```
-```
-kubectl apply -f https://3000-port-tcybnbdg2jycxf74.labs.kodekloud.com/bob/gitops-argocd/raw/branch/master/declarative/multi-app/app-of-apps.yml -n argocd
-
-kubectl get Application -n argocd
-```
 
 
 
