@@ -39,10 +39,6 @@ Helm stores release metadata, including chart details and revision history, as s
 ## Helm Charts
 ![image](https://github.com/user-attachments/assets/1bfb123d-e2e7-470d-930e-1ab196235ee0)
 
-![image](https://github.com/user-attachments/assets/9dc1e9b4-62b4-4943-b716-19ede2776ef0)
-
-![image](https://github.com/user-attachments/assets/ad17b439-e0fb-49e6-b3ce-e96101840a12)
-
 ### Charts.yaml
 
  This file contains the metadata of that helm chart . But it also contains any dependencies if required to be installed for that application .
@@ -62,6 +58,8 @@ A **templates** directory containing all templated resource manifests.
 A **values.yaml** file that defines configuration parameters.
 A **Chart.yaml** file holding chart metadata.
 Optionally, a **charts directory** for dependencies and files such as a README or license.
+
+![image](https://github.com/user-attachments/assets/ad17b439-e0fb-49e6-b3ce-e96101840a12)
 
 search locally or in the hub
 ```
