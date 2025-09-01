@@ -43,6 +43,26 @@ Helm stores release metadata, including chart details and revision history, as s
 
 ![image](https://github.com/user-attachments/assets/ad17b439-e0fb-49e6-b3ce-e96101840a12)
 
+### Charts.yaml
+
+ This file contains the metadata of that helm chart . But it also contains any dependencies if required to be installed for that application .
+
+ <img width="906" height="735" alt="image" src="https://github.com/user-attachments/assets/8c95a100-4087-4fd4-804a-3c5fa141321e" />
+
+* apiVersion: Indicates the chart API version. Helm 3 charts use v2 and Helm 2 charts use v1.
+* appVersion: Specifies the version of the packaged application (e.g., WordPress version 5.8.1).
+* version: Represents the chart version and helps track changes independently of the application version.
+* name, description, and type: Define the chart's name (WordPress), provide a brief description, and indicate that it is an "application" type chart.
+* dependencies: Lists any dependent charts. In this example, the WordPress chart depends on a MariaDB chart, managing its deployment separately.
+* keywords, maintainers, home, and icon: Provide additional metadata useful for chart discovery and reference.
+
+**A typical Helm chart directory structure includes:**
+
+A **templates** directory containing all templated resource manifests.
+A **values.yaml** file that defines configuration parameters.
+A **Chart.yaml** file holding chart metadata.
+Optionally, a **charts directory** for dependencies and files such as a README or license.
+
 search locally or in the hub
 ```
 helm search wordpress
