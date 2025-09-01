@@ -21,15 +21,19 @@ sudo apt-get install helm
 
 ### Helm Key Components
 * Helm CLI
+  
 The Helm command-line utility runs on your local machine, enabling you to install charts, upgrade releases, and roll back changes, among other operations.
 
 * Charts
+  
 Charts are packages comprised of files that include all the instructions Helm needs to create the Kubernetes objects required by an application. They serve as reusable deployment packages and are available publicly from various repositories.
 
 * Releases
+  
 A release is created when a chart is deployed to your cluster. It represents a single installation of an application based on a Helm chart. Each time you perform an action—such as an upgrade or configuration change—a new revision (or snapshot) is generated, enabling independent management of multiple application versions.
 
 * Metadata
+  
 Helm stores release metadata, including chart details and revision history, as secrets within your Kubernetes cluster. This ensures that the deployment history remains accessible to everyone working on the cluster. The metadata is stored as a secret in k8s ckuster.
 
 ## Helm Charts
