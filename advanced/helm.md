@@ -70,6 +70,24 @@ add repo
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
 ```
+Once the repo is added you can check the contents inside the repo
+```
+helm search repo bitnami
+```
+<img width="942" height="255" alt="image" src="https://github.com/user-attachments/assets/226f06e8-947e-4b60-be96-42fe34094f14" />
+
+you can fetch the raw list of charts directly from the repo’s index.yaml. That file is what Helm itself downloads when you do helm repo update.
+```
+curl -s https://charts.bitnami.com/bitnami/index.yaml
+
+## Extract just chart names with yq (YAML processor)
+curl -s https://charts.bitnami.com/bitnami/index.yaml | yq '.entries | keys[]'
+
+## List chart + versions
+curl -s https://charts.bitnami.com/bitnami/index.yaml \
+  | yq '.entries | to_entries[] | "\(.key): \(.value[].version)"'
+
+```
 install repo
 ```
 helm install my-release bitnami wordpress
