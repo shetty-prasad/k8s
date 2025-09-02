@@ -72,15 +72,24 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 ```
 install repo
 ```
-helm install my release bitnami wordpress
+helm install my-release bitnami wordpress
+helm install amaze-surf bitnami/apache
 ```
 list the repos installed
 ```
 helm list
 ```
+list repos added to helm
+```
+helm repo list
+```
 uninstall the repo
 ```
-helm uninstall my release
+helm uninstall my-release
+```
+Remove release from repo
+```
+helm repo remove hashicorp
 ```
 You can override the existing variables of values.yml file using the --set caluse 
 ![image](https://github.com/user-attachments/assets/2e51be8f-ce32-4dd4-a86f-72a1290f96b6)
