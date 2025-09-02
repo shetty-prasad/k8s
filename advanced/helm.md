@@ -30,7 +30,7 @@ Charts are packages comprised of files that include all the instructions Helm ne
 
 * Releases
   
-A release is created when a chart is deployed to your cluster. It represents a single installation of an application based on a Helm chart. Each time you perform an action—such as an upgrade or configuration change—a new revision (or snapshot) is generated, enabling independent management of multiple application versions.
+A release is created when a chart is deployed/installed in your cluster. It represents a single installation of an application based on a Helm chart. Each time you perform an action, such as an upgrade or configuration change, a new revision (or snapshot) is generated, enabling independent management of multiple application versions.
 
 * Metadata
   
@@ -92,19 +92,48 @@ Remove release from repo
 helm repo remove hashicorp
 ```
 You can override the existing variables of values.yml file using the --set caluse 
+
+```
+helm install --set wordpressBlogName="Helm Tut" my-release bitnami/wordpress
+```
+
 ![image](https://github.com/user-attachments/assets/2e51be8f-ce32-4dd4-a86f-72a1290f96b6)
+
 You can also provide different values using the custom-values.yml file
+
+```
+helm install --values custom-values.yaml my-release bitnami/wordpress
+```
+
 ![image](https://github.com/user-attachments/assets/49293f46-f4cf-498e-846e-4994b14c4dd1)
+
 Using helm pull cmd you can download the repo and then untar it. You can then make the required changes and install it.
+
 ![image](https://github.com/user-attachments/assets/873d671f-6b72-405f-87fc-ab70bd7f3822)
+
 you can install the same repo by changing the release name
+
 ![image](https://github.com/user-attachments/assets/2bdc97cf-9f95-4fd6-b109-9842b1206e04)
 
 upgrade using helm upgrade and history cmd gives detail of all releases
+to upgrade to a specific version
+
+```
+helm upgrade dazzling-web bitnami/nginx --version 18.3.6
+```
+
 ![image](https://github.com/user-attachments/assets/2a7fc52b-be6d-4436-8836-76b24f4419fe) 
+
 ![image](https://github.com/user-attachments/assets/85b8f596-4fc6-46ad-8913-7e9bc5a401af)
 
 Rollback cmd to rollback the changes made
+
+```
+helm history RELEASE_NAME [flags]
+
+helm rollback RELEASE_NAME revision-number
+```
+
 ![image](https://github.com/user-attachments/assets/ef19e330-4bf4-474b-ae35-0c28fa5f183a)
 
 Creating a helm chart
