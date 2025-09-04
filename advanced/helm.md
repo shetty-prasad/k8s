@@ -197,12 +197,21 @@ spec:
     app: hello-world
 ```
 You can templatize the release name using {{ .Relaese.Name }} built-in variable
+
 ![image](https://github.com/user-attachments/assets/33895765-3397-411e-9a92-a42938b35762)
 
+```
+helm template /root/webapp --set serviceAccount.labels.tier=customlabel
+
+helm template /root/webapp --set serviceAccount.labels.tier=customlabel | grep tier
+```
+
 Default built-in variables
+
 ![image](https://github.com/user-attachments/assets/f109567a-4d65-4bf7-84d5-984fd074131a)
 
 this is how we templatize
+
 ![image](https://github.com/user-attachments/assets/de68f067-5301-4af8-b4f9-d553a11b7414)
 
 ![image](https://github.com/user-attachments/assets/f0336032-7d96-4bc4-9108-4375ba568548)
