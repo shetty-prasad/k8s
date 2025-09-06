@@ -272,13 +272,19 @@ use the $ operator within the scope to go to the root level
 
 ![image](https://github.com/user-attachments/assets/bc99fc8b-ef04-4f8b-93fe-90b029c0eb4b)
 
+### Range
+
 you can use range operator to traverse through a list
 
 ![image](https://github.com/user-attachments/assets/2fe14c87-73c4-4c5d-a472-372adf9a0548)
 
-if there are similar values you can use the named templates to replace those values, the values need to be written in _helper.tpl file. You can write it in any file that starts with underscore .
+### Named Template
+
+  If there are similar values you can use the named templates to replace those values, the values need to be written in **_helper.tpl** file. You can write it in any file that starts with underscore also.
 
 ![image](https://github.com/user-attachments/assets/2d30ea03-4a23-4d0b-9d0f-c5af5be3cd78)
+
+Notice that appending a dot (.) to the template call passes the current context into the helper file. Without it, the helper template wouldn’t have access to critical values like .Release.Name.
 
 ![image](https://github.com/user-attachments/assets/00d8446f-02f2-4e64-9d19-f44b3a5137cf)
 
