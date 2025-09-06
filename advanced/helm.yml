@@ -2,7 +2,6 @@ export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].
   export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
   echo http://$NODE_IP:$NODE_PORT
 
-  controlplane ~/webapp/templates ➜  cat NOTES.txt 
 
 1. Get the application URL by running these commands:
 {{- if contains "NodePort" .Values.service.type }}
@@ -240,3 +239,459 @@ In the above manifest:
 The annotation "helm.sh/hook": pre-upgrade signals that the Job should run before the upgrade phase.
 The "helm.sh/hook-weight": "5" annotation controls the execution order. Hooks with lower weights execute before those with higher weights. If hooks share the same weight, they are sorted by resource kind and name.
 The "helm.sh/hook-delete-policy": hook-succeeded annotation ensures that the Job resource is deleted after successfully running, which prevents potential conflicts from duplicate objects during future upgrades.
+
+*******************************************
+
+cat _helpers.tpl 
+
+{{/*
+Common labels
+*/}}
+{{- define "labels" }}
+  unit: dev
+{{- end }}
+
+{{- define "webapp-color.selectorLabels" }}
+  unit: dev
+{{- end }}
+
+cat deployment.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+  {{- include "labels" . | indent 2 }}
+    app: webapp-color
+  name: {{ .Values.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+    {{- include "labels" . | indent 4 }}
+      app: webapp-color
+  template:
+    metadata:
+      labels:
+      {{- include "labels" . | indent 6 }}
+        app: webapp-color
+    spec:
+      containers:
+      - image: kodekloud/webapp-color
+        name: webapp-color
+        envFrom:
+         - configMapRef:
+                name: {{ .Values.configMap.name }}
+
+cat service.yml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}
+  namespace: default
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    {{- if eq .Values.service.type "NodePort" }}
+    nodePort: {{ .Values.service.nodePort }}
+    {{- end }}
+  selector:
+    {{- include "webapp-color.selectorLabels" . | indent 4 }}
+  type: {{ .Values.service.type }}
+status:
+  loadBalancer: {}
+
+cat serviceaccount.yaml 
+{{- with .Values.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $.Values.serviceAccount.name }}
+  labels:
+    {{- range $.Values.serviceAccount.labels }}
+    tier: {{ . }}
+    {{- end }}
+    app: webapp-color
+{{- end }}
+
+cat configmap.yaml 
+apiVersion: v1
+metadata:
+  name: {{ .Values.configMap.name }}
+  namespace: default
+kind: ConfigMap
+data:
+  {{- if eq .Values.environment "production" }}
+    APP_COLOR: pink
+  {{- else if eq .Values.environment "development" }}
+    APP_COLOR: darkblue
+  {{- else }}
+    APP_COLOR: green
+  {{- end }}
+
+ cat values.yaml 
+# Default values for webapp-color.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: kodekloud/webapp-color
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+
+name: webapp-color
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: webapp-sa
+  labels:
+    - frontend
+    - web
+    - proxy
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30080
+
+environment: development
+
+
+configMap:
+  name: webapp-color-configmap
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+cat Chart.yaml 
+apiVersion: v2
+name: webapp-color
+description: A Helm chart for Webapp Color Application
+
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "v1"
+
+
+*********************************************************************   Apache helm using hooks **********************************************************
+
+cat values.yaml 
+
+# Default values for webapp.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: httpd
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+nameOverride: webapp
+fullnameOverride: my-webapp
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: webapp
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 31080
+
+  cat Chart.yaml 
+  
+apiVersion: v2
+appVersion: 2.4.48
+description: An Apache Application
+name: webapp
+type: application
+version: 0.1.0
+
+cat templates/install-job.yaml 
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: install-hook
+  annotations:
+     "helm.sh/hook": post-install
+spec:
+  template:
+    spec:
+      containers:
+      - name: install-hook
+        image: alpine
+        command: ["echo",  "Successful Installation"]
+      restartPolicy: Never
+  backoffLimit: 4
+
+cat webapp/templates/_helpers.tpl 
+
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "webapp.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "webapp.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "webapp.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "webapp.labels" -}}
+helm.sh/chart: {{ include "webapp.chart" . }}
+{{ include "webapp.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "webapp.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "webapp.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "webapp.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "webapp.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+cat webapp/templates/deployment.yaml 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webapp.fullname" . }}
+  labels:
+    {{- include "webapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "webapp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "webapp.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "webapp.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+cat webapp/templates/service.yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webapp.fullname" . }}
+  labels:
+    {{- include "webapp.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: {{ .Values.service.nodePort }}
+  selector:
+    {{- include "webapp.selectorLabels" . | nindent 4 }}
+
+cat webapp/templates/serviceaccount.yaml 
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.serviceAccount.name }}
+  labels:
+    {{- include "webapp.labels" . | nindent 4 }}
+
+cat webapp/templates/NOTES.txt  
+
+1. Get the application URL by running these commands:
+{{- if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "webapp.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "webapp.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "webapp.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "webapp.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
+**************  Now upgrading the deployment
+
+First update the Chart.yaml as follows:
+
+apiVersion: v2
+appVersion: 2.4.51
+description: An Apache Application
+name: webapp
+type: application
+version: 0.2
+
+Create a new file upgrade-job.yaml as shown below:
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: upgrade-hook
+  annotations:
+     "helm.sh/hook": post-upgrade
+spec:
+  template:
+    spec:
+      containers:
+      - name: upgrade-hook
+        image: alpine
+        command: ["echo",  "Successful Upgradation"]
+      restartPolicy: Never
+  backoffLimit: 4
+
+cat deployment.yaml 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webapp.fullname" . }}
+  labels:
+    {{- include "webapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "webapp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "webapp.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "webapp.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+Then run the command helm upgrade httpd webapp
