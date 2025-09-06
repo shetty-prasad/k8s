@@ -238,6 +238,8 @@ functions can be further enhanced using | pipe operator
 
 ![image](https://github.com/user-attachments/assets/f25ae7fe-49a2-4607-befb-d457b5569009)
 
+### Conditionals
+
 you can add conditions using the if clause
 
 ![image](https://github.com/user-attachments/assets/bfe0c3f8-e865-4175-aacb-1f4ed19afcad)
@@ -256,7 +258,7 @@ here an else block is added to the start of serviceaccount.yml file if the creat
 
 ![image](https://github.com/user-attachments/assets/64e2db62-0471-49e5-bdca-9c54469be1df)
 
-setting scope using the with clause
+###  setting scope using the with clause
 
 ![image](https://github.com/user-attachments/assets/de2d24b2-2528-4350-80ca-b982c7ab384f)
 
