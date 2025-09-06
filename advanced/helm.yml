@@ -1,0 +1,242 @@
+export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services my-webapp)
+  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+
+  controlplane ~/webapp/templates ➜  cat NOTES.txt 
+
+1. Get the application URL by running these commands:
+{{- if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "webapp.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "webapp.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "webapp.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "webapp.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
+** serviceaccount.yaml
+
+{{- with .Values.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $.Values.serviceAccount.name }}
+  labels:
+    {{- range $key, $val := $.Values.serviceAccount.labels }}
+    {{ $key }}: {{ $val }}
+    {{- end }}
+    app: webapp-color
+{{- end }}
+
+** values.yml
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: webapp-sa
+  labels: 
+    tier: frontend
+    type: web
+    mode: proxy
+
+{{/*
+Common labels
+*/}}
+{{- define "labels" }}
+  unit: dev
+{{- end }}    
+ 
+**************************************************************************************** 
+cat values.yaml 
+
+# Default values for webapp-color.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: kodekloud/webapp-color
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+
+name: webapp-color
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: webapp-sa
+  labels: 
+    tier: frontend
+    type: web
+    mode: proxy
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  name: webapp-color-svc
+  type: NodePort
+  port: 8080
+  nodePort: 30070
+
+
+
+environment: development
+
+
+configMap:
+  name: webapp-color-configmap
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+
+---
+
+cat templates/deployment.yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webapp-color
+  name: {{ .Values.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp-color
+  template:
+    metadata:
+      labels:
+        app: webapp-color
+    spec:
+      containers:
+      - image: kodekloud/webapp-color
+        name: webapp-color
+        envFrom:
+         - configMapRef:
+                name: {{ .Values.configMap.name }}
+----------
+service.yml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  namespace: default
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    {{- if eq .Values.service.type "NodePort" }}
+    nodePort: {{ .Values.service.nodePort }}
+    {{- end }}
+  selector:
+    name: webapp-color
+  type: {{ .Values.service.type }}
+status:
+  loadBalancer: {}
+
+-------------
+
+cat templates/configmap.yaml 
+apiVersion: v1
+metadata:
+  name: {{ .Values.configMap.name }}
+  namespace: default
+kind: ConfigMap
+data:
+  {{- if eq .Values.environment "production" }}
+    APP_COLOR: pink
+  {{- else if eq .Values.environment "development" }}
+    APP_COLOR: darkblue
+  {{- else }}
+    APP_COLOR: green
+  {{- end }}
+
+-------
+
+cat templates/serviceaccount.yaml 
+{{- with .Values.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $.Values.serviceAccount.name }}
+  labels:
+    {{- range $key, $val := $.Values.serviceAccount.labels }}
+    {{ $key }}: {{ $val }}
+    {{- end }}
+    app: webapp-color
+{{- end }}
+-----
+
+###  helm-hook.yml
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-nginx
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: {{ .Release.Name }}-nginx
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pre-upgrade-backup-job
+          image: "alpine"
+          command: ["/bin/backup.sh"]
+
+In the above manifest:
+
+The annotation "helm.sh/hook": pre-upgrade signals that the Job should run before the upgrade phase.
+The "helm.sh/hook-weight": "5" annotation controls the execution order. Hooks with lower weights execute before those with higher weights. If hooks share the same weight, they are sorted by resource kind and name.
+The "helm.sh/hook-delete-policy": hook-succeeded annotation ensures that the Job resource is deleted after successfully running, which prevents potential conflicts from duplicate objects during future upgrades.
