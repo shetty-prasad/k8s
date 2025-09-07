@@ -4,15 +4,21 @@
 When Docker is installed, it organizes data within the **/var/lib/docker** directory. This folder contains several subdirectories such as aufs, containers, images, and volumes. Each subdirectory serves a specific role in Docker’s architecture:
 
 **containers**: Stores all files related to running containers.
+
 **images**: Contains stored images.
+
 **volumes**: Holds data for persistent storage created by containers.
 
 A Docker image consists of several read-only layers:
 
 **Base Layer**: The Ubuntu operating system.
+
 **Packages Layer**: APT packages installed on top of Ubuntu.
+
 **Dependencies Layer**: Python packages such as Flask.
+
 **Source Code Layer**: Your application code included in the image.
+
 **Entry Point Layer**: The layer that sets the container’s entry point.
 
 * Running a container from this image creates a new writable layer on top, which stores changes such as logs, temporary files, or modifications made during runtime. 
