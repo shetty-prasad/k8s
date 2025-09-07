@@ -49,5 +49,84 @@ docker run -v /data/mysql:/var/lib/mysql mysql
 
 # Volumes in Kubernetes
 
+In simple words **volume** specifies from where the storage is given, in this case it is a hostPath or the underlying storage. Whereas the **volumeMount** option specifies how the volume should be mounted inside the container . 
 
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: random-number-generator
+spec:
+  containers:
+    - image: alpine
+      name: alpine
+      command: ["/bin/sh", "-c"]
+      args: ["shuf -i 0-100 -n 1 >> /opt/number.out;"]
+      volumeMounts:
+        - mountPath: /opt
+          name: data-volume
+  volumes:
+    - name: data-volume
+      hostPath:
+        path: /data
+        type: Directory
+```
+
+You can also use AWS block storage as below 
+```
+volumes:
+  - name: data-volume
+    awsElasticBlockStore:
+      volumeID: <volume-id>
+      fsType: ext4
+```
+
+## Persistent Volumes
+
+* Persistent volumes use centralized storage management.
+* Administrators can create a large pool of storage, and users can request specific portions from that pool using Persistent Volume Claims (PVCs).
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-log
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /pv/log
+```
+
+```
+kubectl create -f pv-definition.yaml
+
+kubectl get persistentvolume
+```
+
+## Persistent Volume Claims
+
+Using PVC you can claim the required storage from the underlying PV
+
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+```
+
+```
+kubectl create -f pvc-definition.yaml
+
+kubectl get persistentvolumeclaim
+```
 
