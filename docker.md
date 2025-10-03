@@ -27,7 +27,7 @@ docker image rm image-id
 docker run --name redis -d redis:alpine
 
 docker run --name clickcounter -p 8085:5000 -d --link redis:redis kodekloud/click-counter
-
+```
 version: '3.0'
 services:
   redis:
@@ -37,7 +37,7 @@ services:
   image: kodekloud/click-counter
   ports:
   - 8085:5000
-
+```
 docker-compose up -d
 
 ********************************************************************************
