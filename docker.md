@@ -3,7 +3,9 @@ docker
 docker login
 
 docker tag todoapp-docker:latest shettyp/todoapp-docker:latest
+
 docker images
+
 docker push shettyp/todoapp-docker:latest
 
 docker pull shettyp/todoapp-docker:latest
