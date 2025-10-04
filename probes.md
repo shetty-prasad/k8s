@@ -9,16 +9,19 @@ Allow traffic to a container
 There are three types of probes:
 
 ✅ 1. Liveness Probe
+
 Purpose: Checks if the application is alive or dead.
 
 If the liveness probe fails, Kubernetes will restart the container.
 
 ✅ 2. Readiness Probe
+
 Purpose: Checks if the application is ready to accept traffic.
 
 If it fails, the Pod is removed from the Service endpoint, but not restarted.
 
 ✅ 3. Startup Probe (Introduced in K8s 1.16+)
+
 Purpose: Useful for applications that take a long time to start.
 
 If defined, it runs first, and disables liveness and readiness checks until it succeeds.
