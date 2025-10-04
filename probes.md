@@ -27,12 +27,14 @@ Purpose: Useful for applications that take a long time to start.
 If defined, it runs first, and disables liveness and readiness checks until it succeeds.
 
 🔍 Probe Configuration Types
+
 Probes can use three mechanisms:
 
 Type	Description
-HTTP GET	Sends an HTTP GET request to the container.
-TCP Socket	Attempts to open a TCP connection.
-Exec	Executes a command inside the container.
+
+* HTTP GET :-	Sends an HTTP GET request to the container.
+* TCP Socket :-	Attempts to open a TCP connection.
+* Exec	:- Executes a command inside the container.
 
 🛠️ Example: HTTP Liveness Probe
 yaml
