@@ -37,9 +37,7 @@ Type	Description
 * Exec	:- Executes a command inside the container.
 
 🛠️ Example: HTTP Liveness Probe
-yaml
-Copy
-Edit
+```
 livenessProbe:
   httpGet:
     path: /health
@@ -47,7 +45,7 @@ livenessProbe:
   initialDelaySeconds: 10
   periodSeconds: 5
 Explanation:
-
+```
 initialDelaySeconds: Wait 10s before first probe.
 
 periodSeconds: Probe every 5s.
