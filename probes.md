@@ -44,8 +44,9 @@ livenessProbe:
     port: 8080
   initialDelaySeconds: 10
   periodSeconds: 5
-Explanation:
+
 ```
+
 initialDelaySeconds: Wait 10s before first probe.
 
 periodSeconds: Probe every 5s.
@@ -53,12 +54,13 @@ periodSeconds: Probe every 5s.
 If the /health endpoint on port 8080 fails, the container is restarted.
 
 🧠 Key Probe Parameters
+
 Field	Purpose
-initialDelaySeconds	Wait time before first check
-periodSeconds	How often to perform the probe
-timeoutSeconds	Timeout for the probe
-successThreshold	Number of successes to consider it healthy
-failureThreshold	Number of failures to consider it unhealthy
+* initialDelaySeconds	Wait time before first check
+* periodSeconds	How often to perform the probe
+* timeoutSeconds	Timeout for the probe
+* successThreshold	Number of successes to consider it healthy
+* failureThreshold	Number of failures to consider it unhealthy
 
 ![image](https://github.com/user-attachments/assets/e2404fac-9bdf-4e81-8c05-a95cec5ff164)
 
