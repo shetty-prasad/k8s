@@ -73,6 +73,7 @@ kubectl scale rs new-replica-set --replicas=5
 Selectors let you query or associate resources based on their labels. 
 
 kubectl get pods -l 'environment in (production, qa)'
+
 kubectl get pods -l '!tier'
 
 ### Deployment
