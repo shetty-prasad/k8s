@@ -52,4 +52,26 @@ A user sends an HTTP request to the web server on port 80. \
 The web server forwards the request to the API server on port 5000. \
 The API server queries the database server on port 3306 and sends the response back to the user.
 
+Now you want to restrict the access to db server and only the api server should talk to the db server . In such cases, **network policies** let you ensure that only the API server can access the database server.
+
+```
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              name: api-pod
+      ports:
+        - protocol: TCP
+          port: 3306
+```
 
