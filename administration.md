@@ -38,5 +38,18 @@ Look for:
 To list all pending pods:
 kubectl get pods --field-selector=status.phase=Pending
 
+### Network Policies
 
-Want help writing a script to auto-detect and log pending pods with reasons? I can help with that too.
+Imagine a simple application with three main components:
+
+A web server delivering the front end to users. \
+An API server managing back-end requests. \
+A database server storing application data.
+
+The data flow in this setup is as follows:
+
+A user sends an HTTP request to the web server on port 80. \
+The web server forwards the request to the API server on port 5000. \
+The API server queries the database server on port 3306 and sends the response back to the user.
+
+
