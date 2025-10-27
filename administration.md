@@ -196,19 +196,6 @@ spec:
         ports:
         - containerPort: 8080
 
----
-# Service (Switch between blue/green)
-apiVersion: v1
-kind: Service
-metadata:
-  name: myapp-service
-spec:
-  selector:
-    app: myapp
-    version: blue  # Switch to 'green' for deployment
-  ports:
-  - port: 80
-    targetPort: 8080
 ```
 
 ```
