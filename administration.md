@@ -116,6 +116,12 @@ spec:
           periodSeconds: 5
 ```
 
+**maxUnavailable**
+Matlab: Deployment ke time kitne pods unavailable (down) ho sakte hain maximum.
+
+**maxSurge**
+Matlab: Desired replica count se kitne extra pods create kar sakte hain maximum.
+
 Deployment Process:
 
 ```
