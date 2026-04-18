@@ -20,4 +20,7 @@
 - Ingress
 <img width="920" height="599" alt="image" src="https://github.com/user-attachments/assets/26bee754-6b60-4141-8c91-13734f5566dc" />
 
+- Cluster Autoscaler
+<img width="870" height="587" alt="image" src="https://github.com/user-attachments/assets/50d521e9-9ab7-4b7f-be81-1829121e8c9b" />
 
+- 
