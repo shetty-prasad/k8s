@@ -14,9 +14,10 @@
 
 <img width="1137" height="528" alt="image" src="https://github.com/user-attachments/assets/52300f73-1a64-4fa5-ae1a-7368f20a373d" />
 
-
+- Network
 <img width="1048" height="571" alt="image" src="https://github.com/user-attachments/assets/752a7a86-3e19-4747-8375-53e7d4e807cf" />
 
-
+- Ingress
+<img width="920" height="599" alt="image" src="https://github.com/user-attachments/assets/26bee754-6b60-4141-8c91-13734f5566dc" />
 
 
